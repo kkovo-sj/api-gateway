@@ -1,0 +1,7 @@
+.env
+gateway.db
+gateway.db-*
+__pycache__
+*.pyc
+static/wechat-qr.*
+static/alipay-qr.*

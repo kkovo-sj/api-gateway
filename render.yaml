@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: api-gateway
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: QWEN_API_KEY
+        sync: false
+      - key: ZHIPU_API_KEY
+        sync: false
+      - key: MOONSHOT_API_KEY
+        sync: false
+      - key: TRANSIT_API_KEY
+        sync: false
+      - key: TRANSIT_BASE_URL
+        value: https://api.88api.shop/v1
+      - key: XORPAY_AID
+        sync: false
+      - key: XORPAY_APP_SECRET
+        sync: false
