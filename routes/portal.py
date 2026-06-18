@@ -269,38 +269,38 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="logo">KK API 中转站</a>
+  <a href="/" class="logo">你的 API 可以接入下面的大模型</a>
   <div class="links">
     <a href="#models">模型</a>
     <a href="#pricing">定价</a>
     <a href="#start">接入</a>
-    <a href="/portal">门户</a>
-    <a href="/docs">文档</a>
+    <a href="/portal">你的 API</a>
+    <a href="/docs">接口文档</a>
     <button class="dm-btn" onclick="toggleTheme()" title="夜间模式">◐</button>
   </div>
 </nav>
 <section class="hero">
-  <div class="chip">你的 API 可以调用最顶级的大模型</div>
-  <h1>一个 Key<br>接入全球顶级模型</h1>
-  <p>DeepSeek · GPT-5.5 · Claude · Qwen · GLM · Kimi · Grok<br>OpenAI 兼容格式，三行代码接入，按量计费</p>
+  <div class="chip">GPT-5.5 · Claude Opus · Grok · DeepSeek 已接入</div>
+  <h1>你可以任意挑选<br>你想要的顶级模型</h1>
+  <p>GPT-5.5 — 目前地球上最强的语言模型<br>Claude Opus 4.8 — 编程和推理的终极武器<br>再加上 DeepSeek · Qwen · GLM · Kimi · Grok<br>一个 Key，一把梭，全世界的顶级 AI 听你调遣</p>
   <div class="btns"><a href="/portal" class="btn btn-p">开始使用</a><a href="/docs" class="btn btn-s">查看文档</a></div>
 </section>
 <div class="wrap">
   <section class="sec" id="models">
-    <div class="tag">Features</div>
-    <h2>为什么选 KK API 中转站</h2>
+     <div class="tag">WHY US</div>
+    <h2>我们可以给你提供最方便的途径</h2>
     <div class="grid3">
-      <div class="c"><div class="n">01</div><h3>OpenAI 兼容</h3><p>标准接口，改一行 base_url 即可</p></div>
-      <div class="c"><div class="n">02</div><h3>17 个模型</h3><p>一个 Key 调用国内外全部主流模型</p></div>
-      <div class="c"><div class="n">03</div><h3>流式输出</h3><p>完整 SSE 实时推流</p></div>
-      <div class="c"><div class="n">04</div><h3>按量扣费</h3><p>不用不花钱，余额实时可查</p></div>
-      <div class="c"><div class="n">05</div><h3>消费透明</h3><p>每笔调用都有明细</p></div>
-      <div class="c"><div class="n">06</div><h3>价格实惠</h3><p>低于主流中转均价</p></div>
+      <div class="c"><div class="n">01</div><h3>不用翻墙</h3><p>国内直连，GPT-5.5 和 Claude 随便用</p></div>
+      <div class="c"><div class="n">02</div><h3>不需要外币卡</h3><p>人民币支付，微信支付宝都能充值</p></div>
+      <div class="c"><div class="n">03</div><h3>不用注册四个平台</h3><p>一个 Key 打通国内外 17 个顶级模型</p></div>
+      <div class="c"><div class="n">04</div><h3>三行代码接入</h3><p>OpenAI 格式，改个 base_url 就能用</p></div>
+      <div class="c"><div class="n">05</div><h3>比官方便宜</h3><p>同样的模型，更低的价格</p></div>
+      <div class="c"><div class="n">06</div><h3>按量计费不浪费</h3><p>用多少扣多少，不用不花钱</p></div>
     </div>
   </section>
   <section class="sec" id="pricing">
     <div class="tag">Pricing</div>
-    <h2>每家三级 · 按需选择</h2>
+    <h2>也许你找不到第二个像我们一样的平台</h2>
     <div style="overflow-x:auto"><table>
       <thead><tr><th>厂商</th><th>🔥 最强</th><th>🧠 推理</th><th>💬 对话</th></tr></thead>
       <tbody>
@@ -316,7 +316,7 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
   </section>
   <section class="sec" id="start">
     <div class="tag">Quickstart</div>
-    <h2>三行代码开始</h2>
+    <h2>复制粘贴，开始调用</h2>
     <div class="code">
 <span class="cm"># pip install openai</span><br>
 client = OpenAI(<br>
@@ -331,10 +331,10 @@ res = client.chat.completions.create(<br>
   </section>
 </div>
 <footer class="foot">
-  <a href="/portal">客户门户</a>
+  <a href="/portal">你的 API</a>
   <a href="/docs">API 文档</a>
   <span><span class="online"></span>售后微信：kkovo_sj</span>
-  <span>KK API 中转站 API Hub &copy;copy; 2026</span>
+  <span>KK API 中转站</span>
 </footer>
 <script>
 const html=document.documentElement
