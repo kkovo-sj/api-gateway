@@ -264,6 +264,12 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
 .foot a{color:var(--text2);text-decoration:none}
 .foot a:hover{color:var(--text)}
 .online{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin-right:4px}
+.mbtn{padding:8px 18px;border-radius:100px;border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;cursor:pointer;transition:all .2s;font-weight:500}
+.mbtn.sel,.mbtn:hover{border-color:var(--accent);color:var(--text);background:var(--bg2)}
+.copy-btn{padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:11px;cursor:pointer;transition:all .2s;margin-left:6px}
+.copy-btn:hover{border-color:var(--accent);color:var(--text)}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:10px 24px;border-radius:100px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s}
+.toast.show{opacity:1}
 @media(max-width:768px){.hero h1{font-size:2em}.grid3{grid-template-columns:1fr}}
 </style>
 </head>
@@ -283,9 +289,26 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
   <div class="chip">GPT-5.5 · Claude Opus · Grok · DeepSeek 已接入</div>
   <h1>你可以任意挑选<br>你想要的顶级模型</h1>
   <p>GPT-5.5 — 目前地球上最强的语言模型<br>Claude Opus 4.8 — 编程和推理的终极武器<br>再加上 DeepSeek · Qwen · GLM · Kimi · Grok<br>一个 Key，一把梭，全世界的顶级 AI 听你调遣</p>
-  <div class="btns"><a href="/portal" class="btn btn-p">开始使用</a><a href="/docs" class="btn btn-s">查看文档</a></div>
+  <div class="btns"><a href="/portal" class="btn btn-p">免费获取 API Key</a><a href="#try" class="btn btn-s">先试用</a></div>
 </section>
 <div class="wrap">
+  <section class="sec" id="try">
+    <div class="tag">Try Now</div>
+    <h2>免费试用，选模型直接聊</h2>
+    <div style="max-width:700px;margin:0 auto">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap" id="modelBtns">
+        <button class="mbtn sel" data-model="gpt-5.5">GPT-5.5</button>
+        <button class="mbtn" data-model="claude-sonnet-4-6">Claude Sonnet</button>
+        <button class="mbtn" data-model="deepseek-chat">DeepSeek V3</button>
+        <button class="mbtn" data-model="qwen-turbo">Qwen Turbo</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <input id="tryInput" type="text" placeholder="输入你的问题，体验顶级模型..." style="flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:14px;outline:none" onkeydown="if(event.key==='Enter')tryChat()">
+        <button class="btn btn-p" onclick="tryChat()">发送</button>
+      </div>
+      <div id="tryResult" style="margin-top:16px;padding:20px;border-radius:var(--r);background:var(--bg2);border:1px solid var(--border);min-height:60px;color:var(--text2);font-size:14px;line-height:1.7;white-space:pre-wrap;display:none"></div>
+    </div>
+  </section>
   <section class="sec" id="models">
      <div class="tag">WHY US</div>
     <h2>我们可以给你提供最方便的途径</h2>
@@ -302,15 +325,15 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
     <div class="tag">Pricing</div>
     <h2>也许你找不到第二个像我们一样的平台</h2>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>厂商</th><th>🔥 最强</th><th>🧠 推理</th><th>💬 对话</th></tr></thead>
+      <thead><tr><th>厂商</th><th>🔥 最强</th><th>🧠 推理</th><th>💬 对话</th><th></th></tr></thead>
       <tbody>
-        <tr><td><strong>OpenAI</strong></td><td>GPT-5.5 <span class="p">¥30/1M</span></td><td>o3-mini <span class="p">¥6/1M</span></td><td>GPT-4o-mini <span class="p">¥3/1M</span></td></tr>
-        <tr><td><strong>Anthropic</strong></td><td>Claude Opus 4.8 <span class="p">¥140/1M</span></td><td>Sonnet 4.6 <span class="p">¥85/1M</span></td><td>Haiku <span class="p">¥30/1M</span></td></tr>
-        <tr><td><strong>DeepSeek</strong></td><td>V4 Pro <span class="p">¥15/1M</span></td><td>R1 <span class="p">¥8/1M</span></td><td>V3 <span class="p">¥5/1M</span></td></tr>
-        <tr><td><strong>阿里</strong></td><td>Qwen3-Max <span class="p">¥15/1M</span></td><td>QwQ Plus <span class="p">¥6/1M</span></td><td>Qwen Turbo <span class="p">¥2/1M</span></td></tr>
-        <tr><td><strong>智谱</strong></td><td>GLM-5 <span class="p">¥10/1M</span></td><td>—</td><td>GLM-4-Flash <span class="p">¥0.5/1M</span></td></tr>
-        <tr><td><strong>Kimi</strong></td><td>K2.7 Code <span class="p">¥18/1M</span></td><td>—</td><td>K2.6 <span class="p">¥12/1M</span></td></tr>
-        <tr><td><strong>Grok</strong></td><td>Grok 4.3 <span class="p">¥4/1M</span></td><td>—</td><td>—</td></tr>
+        <tr><td><strong>OpenAI</strong></td><td>GPT-5.5 <span class="p">¥30/1M</span></td><td>o3-mini <span class="p">¥6/1M</span></td><td>GPT-4o-mini <span class="p">¥3/1M</span></td><td><button class="copy-btn" onclick="copyCode('gpt-5.5')">接入 →</button></td></tr>
+        <tr><td><strong>Anthropic</strong></td><td>Claude Opus <span class="p">¥140/1M</span></td><td>Sonnet <span class="p">¥85/1M</span></td><td>Haiku <span class="p">¥30/1M</span></td><td><button class="copy-btn" onclick="copyCode('claude-sonnet-4-6')">接入 →</button></td></tr>
+        <tr><td><strong>DeepSeek</strong></td><td>V4 Pro <span class="p">¥15/1M</span></td><td>R1 <span class="p">¥8/1M</span></td><td>V3 <span class="p">¥5/1M</span></td><td><button class="copy-btn" onclick="copyCode('deepseek-chat')">接入 →</button></td></tr>
+        <tr><td><strong>阿里</strong></td><td>Qwen3-Max <span class="p">¥15/1M</span></td><td>QwQ Plus <span class="p">¥6/1M</span></td><td>Qwen Turbo <span class="p">¥2/1M</span></td><td><button class="copy-btn" onclick="copyCode('qwen-turbo')">接入 →</button></td></tr>
+        <tr><td><strong>智谱</strong></td><td>GLM-5 <span class="p">¥10/1M</span></td><td>—</td><td>GLM-4-Flash <span class="p">¥0.5/1M</span></td><td><button class="copy-btn" onclick="copyCode('glm-4-flash')">接入 →</button></td></tr>
+        <tr><td><strong>Kimi</strong></td><td>K2.7 Code <span class="p">¥18/1M</span></td><td>—</td><td>K2.6 <span class="p">¥12/1M</span></td><td><button class="copy-btn" onclick="copyCode('kimi-k2.6')">接入 →</button></td></tr>
+        <tr><td><strong>Grok</strong></td><td>Grok 4.3 <span class="p">¥4/1M</span></td><td>—</td><td>—</td><td><button class="copy-btn" onclick="copyCode('grok-4.3')">接入 →</button></td></tr>
       </tbody>
     </table></div>
   </section>
@@ -340,6 +363,33 @@ res = client.chat.completions.create(<br>
 const html=document.documentElement
 function toggleTheme(){html.dataset.theme=html.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',html.dataset.theme)}
 (function(){const t=localStorage.getItem('theme');if(t)html.dataset.theme=t;else if(window.matchMedia('(prefers-color-scheme:dark)').matches)html.dataset.theme='dark'})()
+
+// 免费试用
+let selModel='gpt-5.5'
+document.querySelectorAll('.mbtn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.mbtn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selModel=b.dataset.model}})
+async function tryChat(){
+  const input=document.getElementById('tryInput'),res=document.getElementById('tryResult')
+  if(!input.value.trim())return
+  res.style.display='block';res.textContent='思考中...'
+  try{
+    const r=await fetch('/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer sk-demo-try-key'},body:JSON.stringify({model:selModel,messages:[{role:'user',content:input.value}],max_tokens:200})})
+    const d=await r.json()
+    if(d.choices)res.textContent=d.choices[0].message.content
+    else if(d.error&&d.error.message.includes('余额'))res.textContent='试用额度已用完，请到「你的 API」页面充值获取 Key。'
+    else res.textContent='出错了，请稍后重试。'
+  }catch(e){res.textContent='网络错误，请检查连接。'}
+}
+
+// 一键复制接入代码
+function copyCode(model){
+  const code=`from openai import OpenAI\\n\\nclient = OpenAI(\\n    api_key="sk-你的Key",\\n    base_url="http://115.159.84.76:8000/v1"\\n)\\n\\nresponse = client.chat.completions.create(\\n    model="${model}",\\n    messages=[{"role":"user","content":"你好"}]\\n)\\nprint(response.choices[0].message.content)`
+  navigator.clipboard.writeText(code).then(()=>showToast('✅ 已复制 ${model} 接入代码！去「你的 API」获取 Key 即可使用'))
+}
+function showToast(msg){
+  let t=document.getElementById('toast')
+  if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t)}
+  t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)
+}
 </script>
 </body>
 </html>"""
