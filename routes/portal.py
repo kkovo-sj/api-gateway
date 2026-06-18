@@ -222,7 +222,7 @@ LANDING_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>API Hub</title>
+<title>KK API 中转站</title>
 <style>
 :root{--bg:#fff;--bg2:#f9f9f8;--text:#111;--text2:#777;--text3:#bbb;--border:#eaeaea;--accent:#111;--r:10px}
 [data-theme="dark"]{--bg:#111;--bg2:#1b1b1b;--text:#eee;--text2:#999;--text3:#555;--border:#2a2a2a;--accent:#eee}
@@ -269,7 +269,7 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="logo">API Hub</a>
+  <a href="/" class="logo">KK API 中转站</a>
   <div class="links">
     <a href="#models">模型</a>
     <a href="#pricing">定价</a>
@@ -280,15 +280,15 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
   </div>
 </nav>
 <section class="hero">
-  <div class="chip">全球 17 个顶级大模型 · 一个 API Key</div>
-  <h1>AI 模型<br>一站式接入</h1>
+  <div class="chip">你的 API 可以调用最顶级的大模型</div>
+  <h1>一个 Key<br>接入全球顶级模型</h1>
   <p>DeepSeek · GPT-5.5 · Claude · Qwen · GLM · Kimi · Grok<br>OpenAI 兼容格式，三行代码接入，按量计费</p>
   <div class="btns"><a href="/portal" class="btn btn-p">开始使用</a><a href="/docs" class="btn btn-s">查看文档</a></div>
 </section>
 <div class="wrap">
   <section class="sec" id="models">
     <div class="tag">Features</div>
-    <h2>为什么选 API Hub</h2>
+    <h2>为什么选 KK API 中转站</h2>
     <div class="grid3">
       <div class="c"><div class="n">01</div><h3>OpenAI 兼容</h3><p>标准接口，改一行 base_url 即可</p></div>
       <div class="c"><div class="n">02</div><h3>17 个模型</h3><p>一个 Key 调用国内外全部主流模型</p></div>
@@ -334,7 +334,7 @@ res = client.chat.completions.create(<br>
   <a href="/portal">客户门户</a>
   <a href="/docs">API 文档</a>
   <span><span class="online"></span>售后微信：kkovo_sj</span>
-  <span>API Hub &copy; 2026</span>
+  <span>KK API 中转站 API Hub &copy;copy; 2026</span>
 </footer>
 <script>
 const html=document.documentElement
