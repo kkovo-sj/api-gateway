@@ -218,164 +218,132 @@ async def get_topup_orders(api_key: str = ""):
 
 
 LANDING_HTML = """<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>API 中转站</title>
+<title>API Hub</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #111; background: #fafafa; line-height: 1.5; -webkit-font-smoothing: antialiased; }
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid #eee; padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; font-size: 0.85em; }
-.nav .logo { font-weight: 700; }
-.nav a { color: #666; text-decoration: none; margin-left: 24px; }
-.nav a:hover { color: #111; }
-.hero { padding: 160px 32px 100px; text-align: center; max-width: 720px; margin: 0 auto; }
-.hero h1 { font-size: 3em; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
-.hero p { font-size: 1.1em; color: #666; line-height: 1.7; margin-bottom: 40px; }
-.btn { display: inline-block; padding: 12px 32px; border-radius: 100px; font-size: 0.9em; font-weight: 600; text-decoration: none; transition: all .2s; border: none; }
-.btn-dark { background: #111; color: #fff; }
-.btn-dark:hover { background: #333; }
-.btn-ghost { background: transparent; color: #111; border: 1.5px solid #ddd; }
-.btn-ghost:hover { border-color: #111; }
-.btn-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-.container { max-width: 1040px; margin: 0 auto; padding: 0 32px; }
-.section { padding: 80px 0; }
-.section-label { font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 12px; }
-.section h2 { font-size: 2em; font-weight: 700; letter-spacing: -1px; margin-bottom: 48px; }
-.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e5e5e5; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
-.feature-card { background: #fff; padding: 40px 32px; }
-.feature-card .num { font-size: 0.7em; color: #ccc; margin-bottom: 16px; }
-.feature-card h3 { font-size: 1em; font-weight: 600; margin-bottom: 6px; }
-.feature-card p { font-size: 0.85em; color: #888; line-height: 1.6; }
-.pricing-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #e5e5e5; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
-.pricing-card { background: #fff; padding: 40px 28px; text-align: center; }
-.pricing-card h3 { font-size: 1em; font-weight: 600; margin-bottom: 4px; }
-.pricing-card .sub { font-size: 0.8em; color: #999; margin-bottom: 20px; }
-.pricing-card .price { font-size: 2.2em; font-weight: 800; letter-spacing: -1px; }
-.pricing-card .price span { font-size: 0.4em; color: #999; font-weight: 400; }
-.pricing-card .specs { margin-top: 20px; font-size: 0.8em; color: #888; line-height: 2; }
-.code-block { background: #111; color: #e5e5e5; padding: 32px 36px; border-radius: 8px; overflow-x: auto; font-size: 0.85em; line-height: 1.8; font-family: 'SF Mono', monospace; max-width: 680px; margin: 0 auto; }
-.code-block .c { color: #666; }
-.footer { border-top: 1px solid #eee; padding: 40px 32px; text-align: center; font-size: 0.8em; color: #999; }
-@media (max-width: 768px) {
-  .hero h1 { font-size: 2em; }
-  .features { grid-template-columns: 1fr; }
-  .pricing-table { grid-template-columns: 1fr 1fr; }
-}
+:root{--bg:#fff;--bg2:#f9f9f8;--text:#111;--text2:#777;--text3:#bbb;--border:#eaeaea;--accent:#111;--r:10px}
+[data-theme="dark"]{--bg:#111;--bg2:#1b1b1b;--text:#eee;--text2:#999;--text3:#555;--border:#2a2a2a;--accent:#eee}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;color:var(--text);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;font-size:14px;transition:background .3s}
+.nav .logo{font-weight:700;font-size:15px;color:var(--text);text-decoration:none;letter-spacing:-.3px}
+.nav .links{display:flex;align-items:center;gap:16px}
+.nav .links a{color:var(--text2);text-decoration:none;font-size:13px}
+.nav .links a:hover{color:var(--text)}
+.dm-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:15px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.dm-btn:hover{border-color:var(--text3)}
+.hero{padding:120px 24px 70px;text-align:center;max-width:640px;margin:0 auto}
+.hero .chip{display:inline-block;padding:4px 14px;border-radius:100px;background:var(--bg2);color:var(--text2);font-size:11px;font-weight:500;border:1px solid var(--border);margin-bottom:20px;letter-spacing:.3px}
+.hero h1{font-size:2.8em;font-weight:800;letter-spacing:-2px;line-height:1.1;margin-bottom:14px}
+.hero p{font-size:1.02em;color:var(--text2);line-height:1.6;margin-bottom:32px}
+.btn{display:inline-block;padding:11px 26px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;border:none;cursor:pointer;letter-spacing:-.2px}
+.btn-p{background:var(--accent);color:var(--bg)}
+.btn-p:hover{opacity:.85;transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-s:hover{border-color:var(--text3)}
+.btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+.sec{padding:60px 0}
+.sec .tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:10px}
+.sec h2{font-size:1.7em;font-weight:700;letter-spacing:-1px;margin-bottom:36px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.grid3 .c{background:var(--bg);padding:32px 24px;transition:background .3s}
+.grid3 .c .n{font-size:10px;color:var(--text3);margin-bottom:12px}
+.grid3 .c h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.grid3 .c p{font-size:12px;color:var(--text2);line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-weight:500;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:12px 14px;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid var(--border)}
+td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
+.code{background:var(--bg2);color:var(--text);padding:28px 32px;border-radius:var(--r);overflow-x:auto;font-size:13px;line-height:1.8;font-family:'SF Mono','Fira Code',monospace;max-width:640px;margin:0 auto;border:1px solid var(--border)}
+.code .cm{color:var(--text3)}
+.foot{border-top:1px solid var(--border);padding:28px 24px;text-align:center;font-size:12px;color:var(--text3);display:flex;gap:20px;justify-content:center;flex-wrap:wrap;align-items:center}
+.foot a{color:var(--text2);text-decoration:none}
+.foot a:hover{color:var(--text)}
+.online{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin-right:4px}
+@media(max-width:768px){.hero h1{font-size:2em}.grid3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
-  <span class="logo">API 中转站</span>
-  <span>
-    <a href="/docs">接口文档</a>
-    <a href="/portal">客户门户</a>
-  </span>
-</nav>
-
-<section class="hero">
-  <h1>一个 Key，调用所有国产大模型</h1>
-  <p>DeepSeek &middot; GPT-4o &middot; Claude &middot; 千问 &middot; GLM &middot; Kimi<br>国内外大模型一站接入 · OpenAI 兼容 · 按量计费</p>
-  <div class="btn-group">
-    <a href="/portal" class="btn btn-dark">进入门户</a>
-    <a href="/docs" class="btn btn-ghost">接口文档</a>
+  <a href="/" class="logo">API Hub</a>
+  <div class="links">
+    <a href="#models">模型</a>
+    <a href="#pricing">定价</a>
+    <a href="#start">接入</a>
+    <a href="/portal">门户</a>
+    <a href="/docs">文档</a>
+    <button class="dm-btn" onclick="toggleTheme()" title="夜间模式">◐</button>
   </div>
+</nav>
+<section class="hero">
+  <div class="chip">全球 17 个顶级大模型 · 一个 API Key</div>
+  <h1>AI 模型<br>一站式接入</h1>
+  <p>DeepSeek · GPT-5.5 · Claude · Qwen · GLM · Kimi · Grok<br>OpenAI 兼容格式，三行代码接入，按量计费</p>
+  <div class="btns"><a href="/portal" class="btn btn-p">开始使用</a><a href="/docs" class="btn btn-s">查看文档</a></div>
 </section>
-
-<div class="container">
-  <section class="section">
-    <div class="section-label">优势</div>
-    <h2>为什么选我们</h2>
-    <div class="features">
-      <div class="feature-card"><div class="num">01</div><h3>一键接入</h3><p>OpenAI 兼容格式，改一行 base_url 即可</p></div>
-      <div class="feature-card"><div class="num">02</div><h3>四家聚合</h3><p>一个 Key 调用 DeepSeek·千问·GLM·Kimi</p></div>
-      <div class="feature-card"><div class="num">03</div><h3>流式输出</h3><p>完整 SSE 实时推流</p></div>
-      <div class="feature-card"><div class="num">04</div><h3>按量扣费</h3><p>不用不花钱，随时查余额</p></div>
-      <div class="feature-card"><div class="num">05</div><h3>消费透明</h3><p>每笔调用都有明细记录</p></div>
-      <div class="feature-card"><div class="num">06</div><h3>价格实惠</h3><p>低于主流中转站均价</p></div>
+<div class="wrap">
+  <section class="sec" id="models">
+    <div class="tag">Features</div>
+    <h2>为什么选 API Hub</h2>
+    <div class="grid3">
+      <div class="c"><div class="n">01</div><h3>OpenAI 兼容</h3><p>标准接口，改一行 base_url 即可</p></div>
+      <div class="c"><div class="n">02</div><h3>17 个模型</h3><p>一个 Key 调用国内外全部主流模型</p></div>
+      <div class="c"><div class="n">03</div><h3>流式输出</h3><p>完整 SSE 实时推流</p></div>
+      <div class="c"><div class="n">04</div><h3>按量扣费</h3><p>不用不花钱，余额实时可查</p></div>
+      <div class="c"><div class="n">05</div><h3>消费透明</h3><p>每笔调用都有明细</p></div>
+      <div class="c"><div class="n">06</div><h3>价格实惠</h3><p>低于主流中转均价</p></div>
     </div>
   </section>
-
-  <section class="section">
-    <div class="section-label">定价</div>
+  <section class="sec" id="pricing">
+    <div class="tag">Pricing</div>
     <h2>每家三级 · 按需选择</h2>
-    <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse;font-size:0.9em">
-      <thead><tr style="border-bottom:2px solid #111">
-        <th style="padding:12px;text-align:left">厂商</th>
-        <th style="padding:12px;text-align:left">🔥 最强</th>
-        <th style="padding:12px;text-align:left">🧠 推理</th>
-        <th style="padding:12px;text-align:left">💬 对话</th>
-      </tr></thead>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>厂商</th><th>🔥 最强</th><th>🧠 推理</th><th>💬 对话</th></tr></thead>
       <tbody>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>OpenAI</strong></td>
-          <td style="padding:12px">GPT-5.5<br><span style="font-size:0.8em;color:#999">¥30/1M</span></td>
-          <td style="padding:12px">o3-mini<br><span style="font-size:0.8em;color:#999">¥6/1M</span></td>
-          <td style="padding:12px">GPT-4o-mini<br><span style="font-size:0.8em;color:#999">¥3/1M</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>Anthropic</strong></td>
-          <td style="padding:12px">Claude Opus 4.8<br><span style="font-size:0.8em;color:#999">¥140/1M</span></td>
-          <td style="padding:12px">Claude Sonnet 4.6<br><span style="font-size:0.8em;color:#999">¥85/1M</span></td>
-          <td style="padding:12px">Claude Haiku 4.5<br><span style="font-size:0.8em;color:#999">¥30/1M</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>DeepSeek</strong></td>
-          <td style="padding:12px">V4 Pro<br><span style="font-size:0.8em;color:#999">¥15/1M</span></td>
-          <td style="padding:12px">R1<br><span style="font-size:0.8em;color:#999">¥8/1M</span></td>
-          <td style="padding:12px">V3<br><span style="font-size:0.8em;color:#999">¥5/1M</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>阿里</strong></td>
-          <td style="padding:12px">Qwen3-Max<br><span style="font-size:0.8em;color:#999">¥15/1M</span></td>
-          <td style="padding:12px">QwQ Plus<br><span style="font-size:0.8em;color:#999">¥6/1M</span></td>
-          <td style="padding:12px">Qwen Turbo<br><span style="font-size:0.8em;color:#999">¥2/1M</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>智谱</strong></td>
-          <td style="padding:12px">GLM-5<br><span style="font-size:0.8em;color:#999">¥10/1M</span></td>
-          <td style="padding:12px">—</td>
-          <td style="padding:12px">GLM-4-Flash<br><span style="font-size:0.8em;color:#999">¥0.5/1M</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>Kimi</strong></td>
-          <td style="padding:12px">K2.7 Code<br><span style="font-size:0.8em;color:#999">¥18/1M</span></td>
-          <td style="padding:12px">—</td>
-          <td style="padding:12px">K2.6<br><span style="font-size:0.8em;color:#999">¥12/1M</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #eee">
-          <td style="padding:12px"><strong>Grok</strong></td>
-          <td style="padding:12px">Grok 4.3<br><span style="font-size:0.8em;color:#999">¥4/1M</span></td>
-          <td style="padding:12px">—</td>
-          <td style="padding:12px">—</td>
-        </tr>
-    </table>
-    </div>
+        <tr><td><strong>OpenAI</strong></td><td>GPT-5.5 <span class="p">¥30/1M</span></td><td>o3-mini <span class="p">¥6/1M</span></td><td>GPT-4o-mini <span class="p">¥3/1M</span></td></tr>
+        <tr><td><strong>Anthropic</strong></td><td>Claude Opus 4.8 <span class="p">¥140/1M</span></td><td>Sonnet 4.6 <span class="p">¥85/1M</span></td><td>Haiku <span class="p">¥30/1M</span></td></tr>
+        <tr><td><strong>DeepSeek</strong></td><td>V4 Pro <span class="p">¥15/1M</span></td><td>R1 <span class="p">¥8/1M</span></td><td>V3 <span class="p">¥5/1M</span></td></tr>
+        <tr><td><strong>阿里</strong></td><td>Qwen3-Max <span class="p">¥15/1M</span></td><td>QwQ Plus <span class="p">¥6/1M</span></td><td>Qwen Turbo <span class="p">¥2/1M</span></td></tr>
+        <tr><td><strong>智谱</strong></td><td>GLM-5 <span class="p">¥10/1M</span></td><td>—</td><td>GLM-4-Flash <span class="p">¥0.5/1M</span></td></tr>
+        <tr><td><strong>Kimi</strong></td><td>K2.7 Code <span class="p">¥18/1M</span></td><td>—</td><td>K2.6 <span class="p">¥12/1M</span></td></tr>
+        <tr><td><strong>Grok</strong></td><td>Grok 4.3 <span class="p">¥4/1M</span></td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table></div>
   </section>
-
-  <section class="section">
-    <div class="section-label">接入</div>
+  <section class="sec" id="start">
+    <div class="tag">Quickstart</div>
     <h2>三行代码开始</h2>
-    <div class="code-block">
-<span class="c"># pip install openai</span><br>
+    <div class="code">
+<span class="cm"># pip install openai</span><br>
 client = OpenAI(<br>
-&nbsp;&nbsp;api_key=<span style="color:#fff">"sk-你的Key"</span>,<br>
-&nbsp;&nbsp;base_url=<span style="color:#fff">"http://你的地址:8000/v1"</span><br>
+&nbsp;&nbsp;api_key=<span>"sk-你的Key"</span>,<br>
+&nbsp;&nbsp;base_url=<span>"http://115.159.84.76:8000/v1"</span><br>
 )<br>
 res = client.chat.completions.create(<br>
-&nbsp;&nbsp;model=<span style="color:#fff">"deepseek-chat"</span>,<br>
-&nbsp;&nbsp;messages=[{<span style="color:#fff">"role":"user","content":"你好"</span>}]<br>
+&nbsp;&nbsp;model=<span>"deepseek-chat"</span>,<br>
+&nbsp;&nbsp;messages=[{"role":"user","content":"你好"}]<br>
 )
     </div>
   </section>
 </div>
-
-<footer class="footer"><p>API 中转站 &copy; 2026</p></footer>
+<footer class="foot">
+  <a href="/portal">客户门户</a>
+  <a href="/docs">API 文档</a>
+  <span><span class="online"></span>售后微信：kkovo_sj</span>
+  <span>API Hub &copy; 2026</span>
+</footer>
+<script>
+const html=document.documentElement
+function toggleTheme(){html.dataset.theme=html.dataset.theme==='dark'?'light':'dark';localStorage.setItem('theme',html.dataset.theme)}
+(function(){const t=localStorage.getItem('theme');if(t)html.dataset.theme=t;else if(window.matchMedia('(prefers-color-scheme:dark)').matches)html.dataset.theme='dark'})()
+</script>
 </body>
 </html>"""
+
 
 
 PORTAL_HTML = """<!DOCTYPE html>
