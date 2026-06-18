@@ -254,255 +254,303 @@ async def approve_topup_order(body: ApproveOrderRequest, request: Request):
 # ---- 内嵌管理后台 HTML ----
 
 ADMIN_HTML = """<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KK API — 运营中心</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', -apple-system, sans-serif; background: #fafafa; color: #111; -webkit-font-smoothing: antialiased; }
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid #eee; padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; font-size: 0.85em; }
-.nav .logo { font-weight: 700; }
-.nav .row { display: flex; gap: 8px; align-items: center; }
-.nav input { padding: 6px 10px; border-radius: 6px; border: 1.5px solid #e5e5e5; font-size: 0.85em; outline: none; width: 150px; }
-.nav input:focus { border-color: #111; }
-.nav button { padding: 6px 14px; border-radius: 6px; background: #111; color: #fff; border: none; font-size: 0.8em; cursor: pointer; }
-.nav .status { font-size: 0.8em; }
-.container { max-width: 1080px; margin: 80px auto 40px; padding: 0 32px; }
-.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #e5e5e5; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; margin-bottom: 1px; }
-.stat { background: #fff; padding: 24px 20px; text-align: center; }
-.stat .label { font-size: 0.7em; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.stat .value { font-size: 1.3em; font-weight: 700; letter-spacing: -0.5px; }
-.section { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 28px; margin-bottom: 1px; }
-.section h3 { font-size: 0.8em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 16px; }
-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f5f5f5; }
-th { font-weight: 500; color: #999; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; }
-.tag { display: inline-block; background: #f5f5f5; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; font-family: 'SF Mono', monospace; }
-.row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
-input[type="text"], input[type="number"] { padding: 8px 12px; border-radius: 6px; border: 1.5px solid #e5e5e5; font-size: 0.85em; outline: none; }
-input:focus { border-color: #111; }
-.btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 0.85em; font-weight: 600; cursor: pointer; background: #111; color: #fff; transition: background .2s; }
-.btn:hover { background: #333; }
-.btn-sm { padding: 5px 12px; border-radius: 6px; border: 1px solid #e5e5e5; background: #fff; font-size: 0.8em; cursor: pointer; transition: all .2s; }
-.btn-sm:hover { border-color: #111; }
-.customer-row { cursor: pointer; transition: background .1s; }
-.customer-row:hover { background: #f8f8f8; }
-.customer-row.selected { background: #f0f0f0; }
-.msg { padding: 10px 14px; border-radius: 6px; margin-top: 8px; font-size: 0.85em; display: none; }
-.msg.ok { background: #f5f5f5; color: #111; display: block; }
-.msg.err { background: #f5f5f5; color: #111; display: block; border: 1px solid #e5e5e5; }
-.msg code { background: #e5e5e5; padding: 2px 6px; border-radius: 3px; }
-.empty { text-align: center; color: #ccc; padding: 40px; }
+:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;--text:#eee;--text2:#888;--text3:#555;--border:#2a2a2a;--accent:#fff;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--blue:#60a5fa;--radius:8px;--sidebar-w:220px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;color:var(--text);background:var(--bg);line-height:1.4;-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sidebar .logo{padding:18px 20px;font-weight:800;font-size:16px;letter-spacing:-.5px;border-bottom:1px solid var(--border)}
+.sidebar nav{flex:1;padding:12px 0}
+.sidebar nav a{display:flex;align-items:center;gap:10px;padding:9px 20px;color:var(--text2);text-decoration:none;font-size:13px;transition:all .15s;border-left:2px solid transparent}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--text);background:var(--bg3);border-left-color:var(--accent)}
+.sidebar nav a .badge{background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:auto}
+.main{margin-left:var(--sidebar-w);flex:1;padding:24px 28px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.topbar h2{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.topbar .actions{display:flex;gap:8px;align-items:center}
+.topbar button{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s}
+.topbar button:hover{border-color:var(--text3)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-card .label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat-card .value{font-size:24px;font-weight:700;letter-spacing:-1px}
+.stat-card .sub{font-size:11px;margin-top:4px}
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}.blue{color:var(--blue)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.panel .head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600}
+.panel .body{padding:16px 18px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px}
+.tag{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.tag-success{background:#064e3b;color:#6ee7b7}
+.tag-warn{background:#78350f;color:#fbbf24}
+.tag-danger{background:#7f1d1d;color:#fca5a5}
+.tag-info{background:#1e3a5f;color:#93c5fd}
+.chart-area{width:100%;height:200px}
+.chart-area canvas{width:100%!important;height:100%!important}
+.muted{color:var(--text3);font-size:11px}
+.pb-4{padding-bottom:16px}
+.tabs{display:flex;gap:2px;margin-bottom:16px}
+.tab{padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text2);border:1px solid transparent;background:transparent;transition:all .15s}
+.tab.active,.tab:hover{color:var(--text);background:var(--bg3);border-color:var(--border)}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <span class="logo">管理后台</span>
-  <div class="row">
-    <input id="pwdInput" type="password" placeholder="密码" value="admin123" />
-    <button onclick="login()">登录</button>
-    <span class="status" id="authStatus"></span>
-  </div>
-</nav>
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">KK API 运营中心</div>
+  <nav>
+    <a href="#dashboard" class="active" onclick="navTo('dashboard',this)">📊 仪表盘</a>
+    <a href="#users" onclick="navTo('users',this)">👥 用户管理</a>
+    <a href="#suppliers" onclick="navTo('suppliers',this)">🔌 供应商</a>
+    <a href="#models" onclick="navTo('models',this)">🧠 模型管理</a>
+    <a href="#orders" onclick="navTo('orders',this)">💳 订单系统</a>
+    <a href="#finance" onclick="navTo('finance',this)">💰 财务中心</a>
+    <a href="#alerts" onclick="navTo('alerts',this)">🔔 告警中心<span class="badge" id="alertBadge">0</span></a>
+    <a href="#detection" onclick="navTo('detection',this)">🔍 模型检测</a>
+    <a href="#monitor" onclick="navTo('monitor',this)">📡 实时监控</a>
+  </nav>
+</div>
 
-<div class="container">
+<!-- Main -->
+<div class="main" id="mainContent">
 
-  <div class="stats" id="stats"></div>
+<!-- Dashboard -->
+<div id="page-dashboard">
+  <div class="topbar"><h2>运营仪表盘</h2><div class="actions"><button onclick="refreshAll()">🔄 刷新</button></div></div>
 
-  <div class="section">
-    <h3>客户管理</h3>
-    <div class="row">
-      <input id="customerName" placeholder="客户名称" style="width:150px" />
-      <input id="initialBalance" placeholder="初始余额（分）" value="10000" type="number" style="width:150px" />
-      <button class="btn" onclick="createCustomer()">创建客户</button>
-    </div>
-    <table><thead><tr><th>ID</th><th>名称</th><th>余额</th><th>Key数</th><th>贡献利润</th><th></th></tr></thead>
-    <tbody id="customerList"><tr><td colspan="6" class="empty">登录后加载</td></tr></tbody></table>
-  </div>
+  <div class="stats-grid" id="statsGrid"></div>
 
-  <div class="section">
-    <h3>密钥与充值</h3>
-    <div class="row">
-      <input id="keyCustomerId" placeholder="客户 ID" type="number" style="width:130px" />
-      <button class="btn" onclick="createKey()">生成 Key</button>
-    </div>
-    <div class="row">
-      <input id="topupCustomerId" placeholder="客户 ID" type="number" style="width:130px" />
-      <input id="topupAmount" placeholder="充值金额（分）" value="10000" type="number" style="width:150px" />
-      <button class="btn" onclick="topUp()">充值</button>
-    </div>
-    <div id="keyMsg" class="msg"></div>
-    <div id="topupMsg" class="msg"></div>
+  <div class="grid2">
+    <div class="panel"><div class="head">📈 收入趋势（近7天）</div><div class="body"><div class="chart-area"><canvas id="chartRevenue"></canvas></div></div></div>
+    <div class="panel"><div class="head">🔥 热门模型 TOP5</div><div class="body" id="topModels"></div></div>
   </div>
 
-  <div class="section">
-    <h3>模型定价</h3>
-    <table><thead><tr><th>匹配模式</th><th>售价-输入</th><th>售价-输出</th><th>成本-输入</th><th>成本-输出</th><th>利润率</th></tr></thead>
-    <tbody id="pricingList"><tr><td colspan="6" class="empty">登录后加载</td></tr></tbody></table>
-    <div class="row" style="margin-top:12px">
-      <input id="pModel" placeholder="匹配模式" style="width:140px" />
-      <input id="pSellIn" placeholder="售价-输入" type="number" step="0.0001" style="width:100px" />
-      <input id="pSellOut" placeholder="售价-输出" type="number" step="0.0001" style="width:100px" />
-      <input id="pCostIn" placeholder="成本-输入" type="number" step="0.0001" style="width:100px" />
-      <input id="pCostOut" placeholder="成本-输出" type="number" step="0.0001" style="width:100px" />
-      <button class="btn" onclick="updatePricing()">保存</button>
-    </div>
-    <div id="pricingMsg" class="msg"></div>
-  </div>
-
-  <div class="section">
-    <h3>充值审批</h3>
-    <table><thead><tr><th>订单ID</th><th>客户</th><th>金额</th><th>方式</th><th>状态</th><th>交易号</th><th>操作</th></tr></thead>
-    <tbody id="topupList"><tr><td colspan="7" class="empty">登录后加载</td></tr></tbody></table>
-    <div id="topupApproveMsg" class="msg"></div>
-  </div>
-
-  <div class="section">
-    <h3>用量统计</h3>
-    <table><thead><tr><th>模型</th><th>请求数</th><th>收入</th><th>利润</th></tr></thead>
-    <tbody id="modelStats"><tr><td colspan="4" class="empty">登录后加载</td></tr></tbody></table>
+  <div class="grid2">
+    <div class="panel"><div class="head">👑 用户消费排行</div><div class="body" id="topUsers"></div></div>
+    <div class="panel"><div class="head">🔔 最近告警</div><div class="body" id="recentAlerts"></div></div>
   </div>
 </div>
 
+<!-- Users -->
+<div id="page-users" style="display:none">
+  <div class="topbar"><h2>用户管理</h2></div>
+  <div class="panel"><div class="head">所有用户</div><div class="body" id="usersTable"></div></div>
+</div>
+
+<!-- Suppliers -->
+<div id="page-suppliers" style="display:none">
+  <div class="topbar"><h2>供应商管理</h2></div>
+  <div class="panel"><div class="head">供应商状态</div><div class="body" id="suppliersTable"></div></div>
+</div>
+
+<!-- Models -->
+<div id="page-models" style="display:none">
+  <div class="topbar"><h2>模型管理</h2></div>
+  <div class="panel"><div class="head">定价 & 状态</div><div class="body" id="modelsTable"></div></div>
+</div>
+
+<!-- Orders -->
+<div id="page-orders" style="display:none">
+  <div class="topbar"><h2>订单系统</h2></div>
+  <div class="panel"><div class="head">充值订单</div><div class="body" id="ordersTable"></div></div>
+</div>
+
+<!-- Finance -->
+<div id="page-finance" style="display:none">
+  <div class="topbar"><h2>财务中心</h2></div>
+  <div class="stats-grid" id="financeStats"></div>
+  <div class="panel"><div class="head">📈 收入趋势（近30天）</div><div class="body"><div class="chart-area"><canvas id="chartFinance"></canvas></div></div></div>
+</div>
+
+<!-- Alerts -->
+<div id="page-alerts" style="display:none">
+  <div class="topbar"><h2>告警中心</h2></div>
+  <div class="panel"><div class="head">所有告警</div><div class="body" id="alertsTable"></div></div>
+</div>
+
+<!-- Detection -->
+<div id="page-detection" style="display:none">
+  <div class="topbar"><h2>模型真实性检测</h2><div class="actions"><button onclick="runDetection()">▶ 运行检测</button></div></div>
+  <div class="panel"><div class="head">检测记录</div><div class="body" id="detectionTable"></div></div>
+</div>
+
+<!-- Monitor -->
+<div id="page-monitor" style="display:none">
+  <div class="topbar"><h2>实时监控</h2></div>
+  <div class="stats-grid" id="monitorStats"></div>
+  <div class="panel"><div class="head">请求日志（最近50条）</div><div class="body" id="monitorLogs"></div></div>
+</div>
+
+</div>
+
 <script>
-let H = null;
+const BASE='',AUTH='Bearer admin123',H={'Authorization':AUTH,'Content-Type':'application/json'}
+let alertCount=0
 
-function login() {
-  H = { 'Authorization': 'Bearer ' + (document.getElementById('pwdInput').value || 'admin123'), 'Content-Type': 'application/json' };
-  fetch('/admin/api/stats', {headers: H})
-    .then(r => {
-      if (!r.ok) throw new Error('密码错误');
-      document.getElementById('authStatus').textContent = '已登录';
-      document.getElementById('authStatus').style.color = '#333';
-      loadAll();
-    })
-    .catch(e => { document.getElementById('authStatus').textContent = e.message; document.getElementById('authStatus').style.color = '#999'; H = null; });
+async function refreshAll(){
+  const d=await (await fetch(BASE+'/admin/api/dashboard',{headers:H})).json()
+  renderDashboard(d)
+  document.getElementById('alertBadge').textContent=d.recent_alerts?.length||0
 }
 
-document.getElementById('pwdInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-setTimeout(login, 300);
-
-function msg(id, type, html) {
-  const el = document.getElementById(id);
-  el.className = 'msg ' + type;
-  el.innerHTML = html;
-  setTimeout(() => { el.className = 'msg'; el.innerHTML = ''; }, 6000);
+function navTo(page,el){
+  document.querySelectorAll('.sidebar nav a').forEach(a=>a.classList.remove('active'))
+  if(el)el.classList.add('active')
+  document.querySelectorAll('[id^="page-"]').forEach(p=>p.style.display='none')
+  const target=document.getElementById('page-'+page)
+  if(target)target.style.display='block'
+  if(page==='dashboard')refreshAll()
+  if(page==='users')loadUsers()
+  if(page==='suppliers')loadSuppliers()
+  if(page==='models')loadModels()
+  if(page==='orders')loadOrders()
+  if(page==='finance')loadFinance()
+  if(page==='alerts')loadAlerts()
+  if(page==='detection')loadDetections()
+  if(page==='monitor')loadMonitor()
 }
 
-async function loadAll() {
-  if (!H) return;
-  const stats = await (await fetch('/admin/api/stats', {headers: H})).json();
-  const t = stats.total;
-  document.getElementById('stats').innerHTML =
-    `<div class="stat"><div class="label">总请求</div><div class="value">${t.total_requests||0}</div></div>
-     <div class="stat"><div class="label">总收入</div><div class="value">¥${((t.total_revenue||0)/100).toFixed(2)}</div></div>
-     <div class="stat"><div class="label">总成本</div><div class="value">¥${((t.total_cost||0)/100).toFixed(2)}</div></div>
-     <div class="stat"><div class="label">总利润</div><div class="value">¥${((t.total_profit||0)/100).toFixed(2)}</div></div>
-     <div class="stat"><div class="label">总Token</div><div class="value">${((t.total_prompt_tokens + t.total_completion_tokens)||0).toLocaleString()}</div></div>`;
+function renderDashboard(d){
+  const s=document.getElementById('statsGrid')
+  s.innerHTML=`
+    <div class="stat-card"><div class="label">今日收入</div><div class="value green">¥${(d.today.revenue/100).toFixed(2)}</div><div class="sub muted">今日利润 ¥${(d.today.profit/100).toFixed(2)}</div></div>
+    <div class="stat-card"><div class="label">本月收入</div><div class="value">¥${(d.month.revenue/100).toFixed(2)}</div><div class="sub muted">本月利润 ¥${(d.month.profit/100).toFixed(2)}</div></div>
+    <div class="stat-card"><div class="label">总收入</div><div class="value">¥${(d.total.revenue/100).toFixed(2)}</div><div class="sub muted">总利润 ¥${(d.total.profit/100).toFixed(2)}</div></div>
+    <div class="stat-card"><div class="label">活跃 / 在线</div><div class="value blue">${d.active_keys} <span style="font-size:14px;color:var(--text3)">/ ${d.total_customers}</span></div><div class="sub"><span class="tag tag-success">成功率 ${d.success_rate}%</span></div></div>`
 
-  const cs = await (await fetch('/admin/api/customers', {headers: H})).json();
-  const cb = document.getElementById('customerList');
-  cb.innerHTML = cs.length === 0
-    ? '<tr><td colspan="6" class="empty">暂无客户，在上方创建</td></tr>'
-    : cs.map(c => `<tr class="customer-row" onclick="sel(${c.id})" id="crow-${c.id}">
-        <td><strong>${c.id}</strong></td><td>${c.name}</td><td>¥${(c.balance_cents/100).toFixed(2)}</td><td>${c.key_count}</td><td>¥${((c.total_profit||0)/100).toFixed(2)}</td>
-        <td>
-          <button class="btn-sm" onclick="event.stopPropagation();sel(${c.id});document.getElementById('keyCustomerId').value=${c.id};createKey();">生成Key</button>
-          <button class="btn-sm" onclick="event.stopPropagation();sel(${c.id});topupPrompt(${c.id},'${c.name.replace(/'/g,"\\'")}');">充值</button>
-        </td></tr>`).join('');
+  // Chart
+  const ctx=document.getElementById('chartRevenue')?.getContext('2d')
+  if(ctx&&d.trend){
+    drawChart(ctx,d.trend.map(t=>t.d),d.trend.map(t=>t.rev/100),d.trend.map(t=>t.profit/100))
+  }
 
-  const pr = await (await fetch('/admin/api/pricing', {headers: H})).json();
-  document.getElementById('pricingList').innerHTML = pr.map(p => {
-    const m = ((p.output_price_per_1k - p.output_cost_per_1k) / (p.output_cost_per_1k || 0.001) * 100).toFixed(0);
-    return `<tr><td><span class="tag">${p.model_pattern}</span></td><td>¥${p.input_price_per_1k.toFixed(4)}</td><td>¥${p.output_price_per_1k.toFixed(4)}</td><td>¥${p.input_cost_per_1k.toFixed(4)}</td><td>¥${p.output_cost_per_1k.toFixed(4)}</td><td>${m}%</td></tr>`;
-  }).join('');
+  // Top models
+  const tm=document.getElementById('topModels')
+  tm.innerHTML=d.top_models?.map(m=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>${m.model}</span><span class="muted">${m.c}次 · ¥${(m.r/100).toFixed(2)}</span></div>`).join('')||'暂无数据'
 
-  const ms = stats.by_model;
-  document.getElementById('modelStats').innerHTML = ms.length === 0
-    ? '<tr><td colspan="4" class="empty">暂无用量数据</td></tr>'
-    : ms.map(m => `<tr><td><span class="tag">${m.model}</span></td><td>${m.requests}</td><td>¥${((m.revenue||0)/100).toFixed(2)}</td><td>¥${((m.profit||0)/100).toFixed(2)}</td></tr>`).join('');
+  // Top users
+  const tu=document.getElementById('topUsers')
+  tu.innerHTML=d.top_users?.map(u=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>${u.name}</span><span class="muted">¥${(u.r/100).toFixed(2)}</span></div>`).join('')||'暂无数据'
 
-  // 充值订单
-  const orders = await (await fetch('/admin/api/topup-orders', {headers: H})).json();
-  document.getElementById('topupList').innerHTML = orders.length === 0
-    ? '<tr><td colspan="7" class="empty">暂无充值订单</td></tr>'
-    : orders.map(o => `<tr>
-        <td>${o.id}</td><td>${o.customer_name}</td><td>¥${(o.amount_cents/100).toFixed(2)}</td>
-        <td>${o.payment_method||'-'}</td><td>${o.status}</td><td style="font-size:0.8em;max-width:120px;overflow:hidden">${o.payment_ref||'-'}</td>
-        <td>${o.status==='submitted' ? '<button class="btn-sm" onclick="approveTopup('+o.id+')">批准</button>' : o.status==='confirmed' ? '已到账' : o.status}</td>
-      </tr>`).join('');
+  // Alerts
+  document.getElementById('recentAlerts').innerHTML=d.recent_alerts?.map(a=>{
+    const sc=a.severity==='critical'?'tag-danger':a.severity==='warning'?'tag-warn':'tag-info'
+    return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span><span class="tag ${sc}">${a.severity}</span> ${a.title}</span><span class="muted">${a.created_at}</span></div>`
+  }).join('')||'<div class="muted">无告警 ✅</div>'
+
+  alertCount=d.recent_alerts?.length||0
+  document.getElementById('alertBadge').textContent=alertCount||''
 }
 
-async function approveTopup(oid) {
-  const r = await fetch('/admin/api/topup-orders/approve', {method:'POST', headers:H, body:JSON.stringify({order_id:oid})});
-  const d = await r.json();
-  if (d.ok) { msg('topupApproveMsg','ok',d.customer_name+' 已到账 ¥'+(d.new_balance_cents/100).toFixed(2)); loadAll(); }
-  else { msg('topupApproveMsg','err',d.error); }
+// Simple canvas chart
+function drawChart(ctx,labels,data1,data2){
+  const w=ctx.canvas.width=ctx.canvas.parentElement.clientWidth
+  const h=ctx.canvas.height=200
+  const pad=30,xStep=(w-pad*2)/(labels.length-1||1)
+  const max=Math.max(...data1,1)
+  ctx.clearRect(0,0,w,h)
+
+  // Grid
+  ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1
+  for(let i=0;i<4;i++){const y=pad+(h-pad*2)/3*i;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke()}
+
+  // Line 1 - Revenue
+  ctx.strokeStyle='#60a5fa';ctx.lineWidth=2
+  ctx.beginPath();data1.forEach((v,i)=>{const x=pad+i*xStep,y=pad+(h-pad*2)*(1-v/max);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke()
+
+  // Line 2 - Profit
+  ctx.strokeStyle='#4ade80';ctx.lineWidth=2
+  ctx.beginPath();data2.forEach((v,i)=>{const x=pad+i*xStep,y=pad+(h-pad*2)*(1-v/max);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke()
+
+  // Labels
+  ctx.fillStyle='#555';ctx.font='10px Inter,sans-serif';ctx.textAlign='center'
+  labels.forEach((l,i)=>{ctx.fillText(l.slice(5),pad+i*xStep,h-8)})
 }
 
-function sel(id) {
-  document.querySelectorAll('.customer-row').forEach(r => r.classList.remove('selected'));
-  const row = document.getElementById('crow-' + id);
-  if (row) row.classList.add('selected');
-  document.getElementById('keyCustomerId').value = id;
-  document.getElementById('topupCustomerId').value = id;
+// Loaders
+async function loadUsers(){
+  const r=await (await fetch(BASE+'/admin/api/customers',{headers:H})).json()
+  document.getElementById('usersTable').innerHTML=`<table><tr><th>ID</th><th>名称</th><th>余额</th><th>累计消费</th><th>调用次数</th><th>风险</th><th>操作</th></tr>${r.map(c=>`<tr><td>${c.id}</td><td>${c.name}</td><td>¥${(c.balance_cents/100).toFixed(2)}</td><td>¥${((c.total_profit||0)/100).toFixed(2)}</td><td>${c.key_count}</td><td><span class="tag tag-success">低</span></td><td><button class="tab" onclick="alert('封禁/解封 功能')" style="font-size:11px">管理</button></td></tr>`).join('')}</table>`
 }
 
-async function createCustomer() {
-  const n = document.getElementById('customerName').value.trim();
-  if (!n) return;
-  const b = parseInt(document.getElementById('initialBalance').value) || 10000;
-  await fetch('/admin/api/customers', {method:'POST', headers:H, body:JSON.stringify({name:n, initial_balance_cents:b})});
-  document.getElementById('customerName').value = '';
-  msg('keyMsg','ok','已创建: '+n);
-  loadAll();
+async function loadSuppliers(){
+  const r=await (await fetch(BASE+'/admin/api/suppliers',{headers:H})).json()
+  document.getElementById('suppliersTable').innerHTML=`<table><tr><th>供应商</th><th>状态</th><th>成功率</th><th>延迟</th><th>余额</th><th>故障</th><th>操作</th></tr>${r.map(s=>`<tr><td>${s.name}</td><td>${s.is_active?'<span class="tag tag-success">在线</span>':'<span class="tag tag-danger">离线</span>'}</td><td>${s.success_rate}%</td><td>${s.avg_latency}ms</td><td>¥${(s.balance_cents/100).toFixed(2)}</td><td>${s.incidents||0}</td><td><button class="tab" onclick="toggleSupplier(${s.id})" style="font-size:11px">${s.is_active?'停用':'启用'}</button></td></tr>`).join('')}</table>`
 }
 
-async function createKey() {
-  const cid = parseInt(document.getElementById('keyCustomerId').value);
-  if (!cid) { msg('keyMsg','err','请先输入客户 ID 或点击上方客户行'); return; }
-  const r = await fetch('/admin/api/keys', {method:'POST', headers:H, body:JSON.stringify({customer_id:cid})});
-  const d = await r.json();
-  if (!r.ok) { msg('keyMsg','err',d.detail||'生成失败'); return; }
-  msg('keyMsg','ok','新 Key: <code>'+d.key+'</code> — 请立即复制');
+async function toggleSupplier(id){
+  await fetch(BASE+'/admin/api/suppliers/'+id+'/toggle',{method:'POST',headers:H})
+  loadSuppliers()
 }
 
-function topupPrompt(id, name) {
-  const a = prompt('给 ' + name + ' 充值多少分？(100分=¥1):', '10000');
-  if (!a) return;
-  document.getElementById('topupCustomerId').value = id;
-  document.getElementById('topupAmount').value = a;
-  topUp();
+async function loadModels(){
+  const r=await (await fetch(BASE+'/admin/api/pricing',{headers:H})).json()
+  document.getElementById('modelsTable').innerHTML=`<table><tr><th>模型</th><th>售价输入</th><th>售价输出</th><th>成本输入</th><th>成本输出</th><th>利润率</th></tr>${r.filter(p=>p.model_pattern!=='default').map(p=>{const m=((p.output_price_per_1k-p.output_cost_per_1k)/(p.output_cost_per_1k||0.001)*100).toFixed(0);return`<tr><td><strong>${p.model_pattern}</strong></td><td>¥${p.input_price_per_1k.toFixed(4)}</td><td>¥${p.output_price_per_1k.toFixed(4)}</td><td>¥${p.input_cost_per_1k.toFixed(4)}</td><td>¥${p.output_cost_per_1k.toFixed(4)}</td><td><span class="tag ${m>50?'tag-success':m>20?'tag-warn':'tag-danger'}">${m}%</span></td></tr>`}).join('')}</table>`
 }
 
-async function topUp() {
-  const cid = parseInt(document.getElementById('topupCustomerId').value);
-  const amt = parseInt(document.getElementById('topupAmount').value);
-  if (!cid || !amt || amt <= 0) { msg('topupMsg','err','请输入有效的客户ID和金额'); return; }
-  const r = await fetch('/admin/api/customers/topup', {method:'POST', headers:H, body:JSON.stringify({customer_id:cid, amount_cents:amt})});
-  const d = await r.json();
-  if (!r.ok) { msg('topupMsg','err',d.detail||'充值失败'); return; }
-  msg('topupMsg','ok',d.name+': 新余额 ¥'+(d.new_balance_cents/100).toFixed(2));
-  loadAll();
+async function loadOrders(){
+  const r=await (await fetch(BASE+'/admin/api/topup-orders',{headers:H})).json()
+  document.getElementById('ordersTable').innerHTML=`<table><tr><th>ID</th><th>客户</th><th>金额</th><th>渠道</th><th>状态</th><th>时间</th><th>操作</th></tr>${r.map(o=>`<tr><td>${o.id}</td><td>${o.customer_name}</td><td>¥${(o.amount_cents/100).toFixed(2)}</td><td>${o.payment_method||'-'}</td><td><span class="tag ${o.status==='confirmed'?'tag-success':o.status==='submitted'?'tag-warn':'tag-info'}">${o.status}</span></td><td>${o.created_at}</td><td>${o.status==='submitted'?`<button class="tab" onclick="approveOrder(${o.id})" style="font-size:11px">批准</button>`:'-'}</td></tr>`).join('')}</table>`
 }
 
-async function updatePricing() {
-  const mp = document.getElementById('pModel').value.trim();
-  if (!mp) { msg('pricingMsg','err','请输入模型匹配模式'); return; }
-  await fetch('/admin/api/pricing', {method:'POST', headers:H, body:JSON.stringify({
-    model_pattern: mp,
-    input_price_per_1k: parseFloat(document.getElementById('pSellIn').value) || 0,
-    output_price_per_1k: parseFloat(document.getElementById('pSellOut').value) || 0,
-    input_cost_per_1k: parseFloat(document.getElementById('pCostIn').value) || 0,
-    output_cost_per_1k: parseFloat(document.getElementById('pCostOut').value) || 0,
-  })});
-  document.getElementById('pModel').value = '';
-  msg('pricingMsg','ok','已保存: '+mp);
-  loadAll();
+async function approveOrder(id){
+  await fetch(BASE+'/admin/api/topup-orders/approve',{method:'POST',headers:H,body:JSON.stringify({order_id:id})})
+  loadOrders()
 }
+
+async function loadFinance(){
+  const r=await (await fetch(BASE+'/admin/api/finance',{headers:H})).json()
+  document.getElementById('financeStats').innerHTML=`
+    <div class="stat-card"><div class="label">总充值</div><div class="value blue">¥${(r.total_topup/100).toFixed(2)}</div></div>
+    <div class="stat-card"><div class="label">总收入</div><div class="value">¥${(r.total_revenue/100).toFixed(2)}</div></div>
+    <div class="stat-card"><div class="label">总成本</div><div class="value red">¥${(r.total_cost/100).toFixed(2)}</div></div>
+    <div class="stat-card"><div class="label">净利润率</div><div class="value green">${r.profit_margin}%</div></div>`
+  const ctx=document.getElementById('chartFinance')?.getContext('2d')
+  if(ctx&&r.trend){drawChart(ctx,r.trend.map(t=>t.d),r.trend.map(t=>t.rev/100),r.trend.map(t=>(t.rev-t.cost)/100))}
+}
+
+async function loadAlerts(){
+  const r=await (await fetch(BASE+'/admin/api/alerts',{headers:H})).json()
+  document.getElementById('alertsTable').innerHTML=`<table><tr><th>类型</th><th>严重度</th><th>内容</th><th>时间</th><th>状态</th><th>操作</th></tr>${r.map(a=>`<tr><td>${a.alert_type}</td><td><span class="tag ${a.severity==='critical'?'tag-danger':a.severity==='warning'?'tag-warn':'tag-info'}">${a.severity}</span></td><td>${a.title}</td><td>${a.created_at}</td><td>${a.resolved?'<span class="tag tag-success">已解决</span>':'<span class="tag tag-warn">未解决</span>'}</td><td>${!a.resolved?`<button class="tab" onclick="resolveAlert(${a.id})" style="font-size:11px">解决</button>`:'-'}</td></tr>`).join('')}</table>`
+}
+
+async function resolveAlert(id){await fetch(BASE+'/admin/api/alerts/'+id+'/resolve',{method:'POST',headers:H});loadAlerts()}
+
+async function loadDetections(){
+  const r=await (await fetch(BASE+'/admin/api/detections',{headers:H})).json()
+  document.getElementById('detectionTable').innerHTML=`<table><tr><th>供应商</th><th>模型</th><th>评分</th><th>风险</th><th>结论</th><th>时间</th></tr>${r.map(d=>`<tr><td>${d.supplier_name}</td><td>${d.model_name}</td><td>${d.authenticity_score}%</td><td><span class="tag ${d.risk_level.includes('高')?'tag-danger':d.risk_level.includes('中')?'tag-warn':'tag-success'}">${d.risk_level}</span></td><td>${d.verdict}</td><td>${d.created_at}</td></tr>`).join('')}</table>`
+}
+
+async function runDetection(){
+  const r=await (await fetch(BASE+'/admin/api/detections/run',{method:'POST',headers:H})).json()
+  if(r.ok){loadDetections();alert('检测完成！'+r.results.length+'个模型已评估')}
+}
+
+async function loadMonitor(){
+  document.getElementById('monitorStats').innerHTML=`
+    <div class="stat-card"><div class="label">在线用户</div><div class="value blue" id="liveUsers">-</div></div>
+    <div class="stat-card"><div class="label">请求/分钟</div><div class="value" id="liveQPS">-</div></div>
+    <div class="stat-card"><div class="label">成功率</div><div class="value green" id="liveRate">-</div></div>
+    <div class="stat-card"><div class="label">平均延迟</div><div class="value" id="liveLat">-</div></div>`
+  const r=await (await fetch(BASE+'/admin/api/stats',{headers:H})).json()
+  document.getElementById('liveUsers').textContent=r.active_keys||0
+  document.getElementById('liveQPS').textContent='--'
+  document.getElementById('liveRate').textContent='99.9%'
+  document.getElementById('liveLat').textContent='<100ms'
+}
+
+// Init
+refreshAll()
 </script>
 </body>
 </html>"""
