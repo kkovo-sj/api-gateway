@@ -96,6 +96,7 @@ from routes.admin import router as admin_router
 from routes.portal import router as portal_router
 from routes.pay import router as pay_router
 from routes.admin_ext import router as admin_ext_router
+from routes.chat_ui import router as chat_ui_router
 
 app.include_router(portal_router)
 app.include_router(pay_router)
@@ -103,6 +104,7 @@ app.include_router(chat_router)
 app.include_router(models_router)
 app.include_router(admin_router)
 app.include_router(admin_ext_router)
+app.include_router(chat_ui_router)
 
 
 @app.get("/health", summary="健康检查", tags=["系统"])
