@@ -159,23 +159,64 @@ async def get_detections(request: Request):
 
 @router.post("/detections/run")
 async def run_detection(request: Request):
-    """模拟运行一次模型真实性检测"""
+    """运行完整模型真实性检测"""
     _auth(request)
-    import random
+    from services.detector import run_full_detection
+    return await run_full_detection()
+
+
+@router.get("/detections/benchmark")
+async def get_benchmark_questions(request: Request):
+    """获取测试题库"""
+    _auth(request)
+    from services.detector import BENCHMARK_QUESTIONS
+    return {"total": len(BENCHMARK_QUESTIONS), "questions": BENCHMARK_QUESTIONS[:10]}
+
+
+@router.post("/suppliers/health-check")
+async def run_health_check(request: Request):
+    """运行供应商健康检查"""
+    _auth(request)
+    from services.supplier_manager import check_supplier_health, check_balance_alert
+    results = check_supplier_health()
+    check_balance_alert()
+    return {"ok": True, "results": results}
+
+
+@router.get("/suppliers/cost-analysis")
+async def get_cost_analysis(request: Request):
+    """供应商成本/利润分析"""
+    _auth(request)
+    from services.supplier_manager import get_supplier_cost_analysis
+    return get_supplier_cost_analysis()
+
+
+@router.post("/suppliers")
+async def create_supplier(request: Request):
+    """新增供应商"""
+    _auth(request)
+    body = await request.json()
     db = get_db()
     try:
-        models = db.execute("SELECT DISTINCT model_pattern, supplier_name FROM pricing WHERE model_pattern != 'default'").fetchall()
-        results = []
-        for m in models:
-            score = round(random.uniform(85, 100), 1)
-            risk = "低风险" if score > 95 else ("中风险" if score > 88 else "高风险")
-            db.execute("INSERT INTO model_detection_logs (supplier_name, model_name, authenticity_score, risk_level, verdict) VALUES (?,?,?,?,?)",
-                       (m["supplier_name"], m["model_pattern"], score, risk, "高度可信" if score > 95 else "可能降级"))
-            results.append({"model": m["model_pattern"], "score": score, "risk": risk})
+        db.execute(
+            "INSERT INTO suppliers (name, api_key, base_url, priority) VALUES (?,?,?,?)",
+            (body["name"], body.get("api_key", ""), body.get("base_url", ""), body.get("priority", 99)),
+        )
         db.commit()
-        return {"ok": True, "results": results}
+        return {"ok": True}
     finally:
         db.close()
+
+
+@router.delete("/suppliers/{sid}")
+async def delete_supplier(sid: int, request: Request):
+    """删除供应商"""
+    _auth(request)
+    db = get_db()
+    db.execute("DELETE FROM suppliers WHERE id=?", (sid,))
+    db.commit()
+    db.close()
+    return {"ok": True}
 
 
 # ========== 财务中心 ==========

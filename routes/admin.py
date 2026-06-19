@@ -349,7 +349,7 @@ td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px}
 
 <!-- Suppliers -->
 <div id="page-suppliers" style="display:none">
-  <div class="topbar"><h2>供应商管理</h2></div>
+  <div class="topbar"><h2>供应商管理</h2><div class="actions"><button onclick="healthCheck()">🩺 健康检查</button><button onclick="loadCostAnalysis()">📊 成本分析</button></div></div>
   <div class="panel"><div class="head">供应商状态</div><div class="body" id="suppliersTable"></div></div>
 </div>
 
@@ -370,6 +370,7 @@ td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px}
   <div class="topbar"><h2>财务中心</h2></div>
   <div class="stats-grid" id="financeStats"></div>
   <div class="panel"><div class="head">📈 收入趋势（近30天）</div><div class="body"><div class="chart-area"><canvas id="chartFinance"></canvas></div></div></div>
+  <div class="panel" id="costAnalysisPanel" style="display:none"><div class="head">📊 供应商成本分析</div><div class="body" id="costAnalysis"></div></div>
 </div>
 
 <!-- Alerts -->
@@ -550,6 +551,9 @@ async function loadMonitor(){
 }
 
 // Init
+async function healthCheck(){const r=await fetch(BASE+'/admin/api/suppliers/health-check',{method:'POST',headers:H});const d=await r.json();alert('健康检查完成：'+d.results.length+'个供应商已检测');loadSuppliers()}
+async function loadCostAnalysis(){const panel=document.getElementById('costAnalysisPanel');panel.style.display='block';const r=await(await fetch(BASE+'/admin/api/suppliers/cost-analysis',{headers:H})).json();document.getElementById('costAnalysis').innerHTML=`<table><tr><th>供应商</th><th>调用次数</th><th>总成本</th><th>总收入</th><th>利润</th><th>成功率</th><th>延迟</th></tr>${r.map(s=>`<tr><td>${s.supplier_name}</td><td>${s.calls}</td><td>¥${(s.total_cost/100).toFixed(2)}</td><td>¥${(s.total_revenue/100).toFixed(2)}</td><td class="${s.total_profit>0?'green':'red'}">¥${(s.total_profit/100).toFixed(2)}</td><td>${s.success_rate}%</td><td>${s.avg_latency}ms</td></tr>`).join('')}</table>`}
+
 refreshAll()
 </script>
 </body>
