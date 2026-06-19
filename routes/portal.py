@@ -7,6 +7,35 @@ from database import get_db
 
 router = APIRouter(tags=["portal"])
 
+# 匿名试用接口
+import time as _time
+from collections import defaultdict as _dd
+_try_limits = _dd(list)
+
+@router.post("/try")
+async def try_chat(request: Request):
+    """匿名试用——限速：每IP每分钟3次"""
+    ip = request.client.host if request.client else "unknown"
+    now = _time.time()
+    _try_limits[ip] = [t for t in _try_limits[ip] if now - t < 60]
+    if len(_try_limits[ip]) >= 3:
+        return {"error": {"message": "试用次数用完，请到门户获取API Key"}}
+    _try_limits[ip].append(now)
+
+    body = await request.json()
+    model = body.get("model", "deepseek-chat")
+    msg = body.get("message", "")[:200]
+
+    import httpx
+    from config import settings
+    async with httpx.AsyncClient(timeout=30) as client:
+        resp = await client.post(
+            f"{settings.transit_base_url}/chat/completions",
+            headers={"Authorization": f"Bearer {settings.transit_api_key}", "Content-Type": "application/json"},
+            json={"model": model, "messages": [{"role": "user", "content": msg}], "max_tokens": 200},
+        )
+        return resp.json()
+
 
 @router.get("/", response_class=HTMLResponse)
 async def landing():
@@ -373,7 +402,7 @@ async function tryChat(){
   if(!input.value.trim())return
   res.style.display='block';res.textContent='思考中...'
   try{
-    const r=await fetch('/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer sk-demo-try-key'},body:JSON.stringify({model:selModel,messages:[{role:'user',content:input.value}],max_tokens:200})})
+    const r=await fetch('/try',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:selModel,message:input.value})})
     const d=await r.json()
     if(d.choices)res.textContent=d.choices[0].message.content
     else if(d.error&&d.error.message.includes('余额'))res.textContent='试用额度已用完，请到「你的 API」页面充值获取 Key。'
