@@ -311,6 +311,7 @@ td .p{font-size:11px;color:var(--text2);display:block;margin-top:2px}
     <a href="#start">接入</a>
     <a href="/portal">你的 API</a>
     <a href="/chat">AI 聊天</a>
+    <a href="/benchmark">测速</a>
     <a href="/docs">接口文档</a>
     <button class="dm-btn" onclick="toggleTheme()" title="夜间模式">◐</button>
   </div>

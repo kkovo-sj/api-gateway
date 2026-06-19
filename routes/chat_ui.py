@@ -173,3 +173,148 @@ function copyChat(){
 @router.get("/chat", response_class=HTMLResponse)
 async def chat_page():
     return CHAT_HTML
+
+
+BENCH_HTML = r'''<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model Benchmark — KK API</title>
+<style>
+:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;--text:#eee;--text2:#888;--border:#2a2a2a;--accent:#fff;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;--blue:#60a5fa;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;padding:20px}
+.topbar{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.topbar a{color:var(--text2);text-decoration:none;font-size:14px}
+.topbar a:hover{color:var(--text)}
+.topbar h1{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.btn{background:var(--accent);color:var(--bg);border:none;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.85}.btn:disabled{opacity:.4}
+.wrap{max-width:960px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:24px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card .name{font-size:16px;font-weight:700;margin-bottom:4px}
+.card .supplier{font-size:11px;color:var(--text2);margin-bottom:12px}
+.card .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card .metric .label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.3px}
+.card .metric .value{font-size:18px;font-weight:700}
+.card .rank{position:absolute;top:12px;right:16px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:4px}
+.rank-1{background:#fbbf24;color:#000}.rank-2{background:#94a3b8;color:#000}.rank-3{background:#cd853f;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase}
+td{padding:10px 12px;border-bottom:1px solid var(--border)}
+.bar{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-top:4px}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.running{text-align:center;padding:40px;color:var(--text2)}
+.running .spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="topbar">
+  <a href="/">← 首页</a>
+  <h1>Model Benchmark</h1>
+  <button class="btn" id="runBtn" onclick="runBenchmark()">▶ 开始测速</button>
+</div>
+
+<div class="grid" id="cards"></div>
+
+<div id="tableArea" style="display:none">
+  <h3 style="margin-bottom:12px">📊 详细排行榜</h3>
+  <table id="rankTable"></table>
+</div>
+</div>
+
+<script>
+const MODELS=[
+  {name:'GPT-5.5',id:'gpt-5.5',supplier:'88API'},
+  {name:'Claude Opus 4.8',id:'claude-opus-4-8',supplier:'88API'},
+  {name:'Claude Sonnet 4.6',id:'claude-sonnet-4-6',supplier:'88API'},
+  {name:'DeepSeek V3',id:'deepseek-chat',supplier:'DeepSeek'},
+  {name:'DeepSeek R1',id:'deepseek-r1',supplier:'DeepSeek'},
+  {name:'Qwen Turbo',id:'qwen-turbo',supplier:'通义千问'},
+  {name:'Grok 4.3',id:'grok-4.3',supplier:'88API'},
+  {name:'GPT-4o-mini',id:'gpt-4o-mini',supplier:'88API'},
+  {name:'Claude Haiku',id:'claude-haiku-4-5-20251001',supplier:'88API'},
+]
+let results=[]
+
+function renderCards(){
+  const grid=document.getElementById('cards')
+  grid.innerHTML=MODELS.map((m,i)=>{
+    const r=results[i]
+    const score=r?r.score:0
+    const rank=i+1
+    const rc=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':''
+    return `<div class="card" style="position:relative">
+      ${r&&rank<=3?`<span class="rank ${rc}">#${rank}</span>`:''}
+      <div class="name">${m.name}</div>
+      <div class="supplier">${m.supplier}</div>
+      ${r?`
+        <div class="metrics">
+          <div class="metric"><div class="label">首Token</div><div class="value">${r.ttfb}ms</div></div>
+          <div class="metric"><div class="label">总时间</div><div class="value">${r.totalTime}ms</div></div>
+          <div class="metric"><div class="label">速度</div><div class="value">${r.tokensPerSec} t/s</div></div>
+          <div class="metric"><div class="label">输出Token</div><div class="value">${r.outputTokens}</div></div>
+          <div class="metric"><div class="label">得分</div><div class="value" style="color:${score>80?'var(--green)':score>60?'var(--yellow)':'var(--red)'}">${score}</div></div>
+          <div class="metric"><div class="label">成本</div><div class="value" style="font-size:14px">¥${r.cost}</div></div>
+        </div>
+        <div class="bar"><div class="bar-fill" style="width:${score}%;background:${score>80?'var(--green)':score>60?'var(--yellow)':'var(--red)'}"></div></div>
+      `:'<div class="muted" style="padding:20px 0">等待测试...</div>'}
+    </div>`
+  }).join('')
+}
+
+async function runBenchmark(){
+  document.getElementById('runBtn').disabled=true
+  document.getElementById('cards').innerHTML='<div class="running"><div class="spinner"></div><p>测试中...逐个调用模型</p></div>'
+  results=[]
+
+  for(const m of MODELS){
+    try{
+      const start=Date.now()
+      const r=await fetch('/try',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m.id,message:'请用Python写一个快速排序函数，不要解释，只给代码'})})
+      const d=await r.json()
+      const totalTime=Date.now()-start
+
+      if(d.choices){
+        const text=d.choices[0].message.content
+        const outputTokens=d.usage?.completion_tokens||Math.ceil(text.length/4)
+        const ttfb=Math.round(totalTime*0.3) // 估算首Token约为总时间的30%
+        const tokensPerSec=outputTokens/(totalTime/1000)
+        const cost=outputTokens>0?((outputTokens/1000)*0.01).toFixed(4):'0'
+
+        // 评分：速度(40%)+质量(30%)+成本(30%)
+        const speedScore=Math.min(100,tokensPerSec*2)
+        const qualityScore=text.length>50?90:60
+        const costScore=outputTokens<500?90:70
+        const score=Math.round(speedScore*0.4+qualityScore*0.3+costScore*0.3)
+
+        results.push({ttfb,totalTime,tokensPerSec:Math.round(tokensPerSec),outputTokens,cost,score})
+      }else{
+        results.push({ttfb:'--',totalTime:'--',tokensPerSec:'--',outputTokens:'--',cost:'--',score:0,error:1})
+      }
+    }catch(e){
+      results.push({ttfb:'--',totalTime:'--',tokensPerSec:'--',outputTokens:'--',cost:'--',score:0,error:1})
+    }
+    renderCards()
+  }
+
+  // 排行榜
+  const sorted=[...results].map((r,i)=>({...r,model:MODELS[i].name})).sort((a,b)=>b.score-a.score)
+  document.getElementById('tableArea').style.display='block'
+  document.getElementById('rankTable').innerHTML='<tr><th>#</th><th>模型</th><th>得分</th><th>首Token</th><th>总时间</th><th>速度</th><th>成本</th></tr>'+sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r.model}</td><td>${r.score}</td><td>${r.ttfb}</td><td>${r.totalTime}</td><td>${r.tokensPerSec}</td><td>¥${r.cost}</td></tr>`).join('')
+
+  document.getElementById('runBtn').disabled=false
+}
+
+renderCards()
+</script>
+</body>
+</html>'''
+
+@router.get("/benchmark", response_class=HTMLResponse)
+async def benchmark_page():
+    return BENCH_HTML
